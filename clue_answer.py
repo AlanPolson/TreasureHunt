@@ -1,6 +1,10 @@
-from msvcrt import getche, getch, getwch
+from msvcrt import getche, getch, getwch, getwche
 from os import system
+
 debug=False
+dev=False
+hint=False
+ans=False
 
 def clue_ans(clue = 'dr suess book',  answe = 'cat in the hat'):
   """
@@ -12,21 +16,29 @@ def clue_ans(clue = 'dr suess book',  answe = 'cat in the hat'):
   answer = answe.upper().split()
   ans=[]
   choice = ''
-  if debug:
-    cntr=0
+  cntr=0
   while 1:
     refresh(clue,answer,ans)
     result=checkans(ans,answer)
     if result == 'N':
-      break
+      return('Q')
     elif result =='Y':
       ans=[]
       continue;
     elif result=='Correct':
       print("Answer:",' '.join(ans),"\nCorrect!")
-      break;      
+      return('C')      
     char = getwch()
-    ans=ans_append(char.upper(), answer,ans)
+    if char=='à':#F12
+      if input("Enter password to invoke Developer mode\n")=='Alan Rules':
+        setdev(True)
+        continue
+    
+    elif char in('\x08', 'à'):#backspace, delete
+      ans=ans_delete(ans)
+    
+    else:
+      ans=ans_append(char.upper(), answer,ans)
     for words in ans:
       if words in (' ', '\c', 'n', '\r', '\t'):
         ans.remove(words)
@@ -34,6 +46,23 @@ def clue_ans(clue = 'dr suess book',  answe = 'cat in the hat'):
       cntr+=1
       print("\nEnd of iteration #",cntr,"\nans=",ans)
       getch()
+
+def setdev(tog):
+  global dev
+  global debug
+  global hint
+  dev=tog
+  option=''
+  while (option!='x'):
+    print('Developer Mode [a] = ',dev, '\nDebug Mode [b] = ',debug, '\nHint [c] = ',hint, '\nExit [x]')
+    option=input('\nEnter choice to toggle variables:')
+    if option == 'a':
+      dev=not dev
+    elif option == 'b':
+      debug = not debug
+    elif option == 'c':
+      hint = not hint
+    
 
 def checkans(ans,answer):
   """
@@ -59,6 +88,8 @@ def ans_append(char,answer,ans):
   Correct Answer (list of strings)
   User-inputted answer (list of strings)
   """
+  if debug:
+    print("in answ_apend")
   if len(ans)==len(answer) and len(ans[len(ans)-1])==len(answer[len(answer)-1]):
     return ans
   if ans==[]:
@@ -69,7 +100,7 @@ def ans_append(char,answer,ans):
   i=len(ans)-1
   j=len(ans[i])-1
   if debug:
-    print("in answ_apend", '\ni==',i,'\nj=',j)
+    print('\ni==',i,'\nj=',j)
   
   
   if j+1==len(answer[i]):
@@ -87,6 +118,22 @@ def ans_append(char,answer,ans):
       print(ans[i])
       getch()
     ans[i]+=char
+  return ans
+
+def ans_delete(ans):
+  """
+  deletes the last charachter in the answer
+  """
+  if ans==[]:
+    return ans
+  
+  i=len(ans)-1
+  j=len(ans[i])-1
+  
+  if j>=1:
+    ans[i]=ans[i][:j]
+  else:
+    ans.remove(ans[i])
   return ans
 
 def refresh(clue,answer,ans):

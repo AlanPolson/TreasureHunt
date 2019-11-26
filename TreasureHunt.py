@@ -7,9 +7,13 @@ data = csv_reader.online_csv(url)
 for i in range(0, len(data)):
   if data[i]["Position"]=='':
     continue;
-  clue_answer.clue_ans(data[i]["Clue"],data[i]["Solution"])
-  choice =input("Press any key to move ahead;\nPress 'Q' to quit now\n")
-  if choice.upper()=='Q':
-    break
+  #p1=clue_answer.ClueAnswer
+  attempt=clue_answer.clue_ans(data[i]["Clue"],data[i]["Solution"])
+  if attempt == 'C':
+    choice =input("Press any key to move ahead;\nPress 'Q' to quit now\n")
+    if choice.upper()=='Q':
+      break
+  else:
+    break  
 print("Press any key to exit...")
 getch()
